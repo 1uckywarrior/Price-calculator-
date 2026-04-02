@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trading Calculator</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      text-align: center;
+    }
+
+    .container {
+      margin-top: 30px;
+    }
+
+    input, select {
+      display: block;
+      margin: 10px auto;
+      padding: 12px;
+      width: 85%;
+      border-radius: 8px;
+      border: none;
+    }
+
+    button {
+      padding: 12px;
+      width: 90%;
+      margin-top: 8px;
+      border-radius: 10px;
+      border: none;
+      color: white;
+      font-size: 16px;
+    }
+
+    .calc {
+      background: #22c55e;
+    }
+
+    .reset {
+      background: #ef4444;
+    }
+
+    h3 {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Trading Formula Calculator</h2>
+
+  <select id="calcVar">
+    <option value="A">Calculate A (Margin)</option>
+    <option value="B">Calculate B (Entry)</option>
+    <option value="C">Calculate C (New Price)</option>
+    <option value="D">Calculate D (Position Size)</option>
+    <option value="E">Calculate E (Avg Entry)</option>
+  </select>
+
+  <input id="A" placeholder="A (Required Margin)" type="number">
+  <input id="B" placeholder="B (Entry Price)" type="number">
+  <input id="C" placeholder="C (New Entry Price)" type="number">
+  <input id="D" placeholder="D (Position Size)" type="number">
+  <input id="E" placeholder="E (Avg Entry)" type="number">
+  <input id="F" placeholder="F (Leverage)" type="number">
+
+  <button class="calc" onclick="calculate()">Calculate</button>
+  <button class="reset" onclick="resetFields()">Reset</button>
+
+  <h3 id="result"></h3>
+</div>
+
+<script>
+function calculate() {
+  let A = parseFloat(document.getElementById("A").value);
+  let B = parseFloat(document.getElementById("B").value);
+  let C = parseFloat(document.getElementById("C").value);
+  let D = parseFloat(document.getElementById("D").value);
+  let E = parseFloat(document.getElementById("E").value);
+  let F = parseFloat(document.getElementById("F").value);
+
+  let calcVar = document.getElementById("calcVar").value;
+  let result;
+
+  try {
+    let values = {A, B, C, D, E, F};
+    delete values[calcVar];
+
+    for (let key in values) {
+      if (isNaN(values[key])) throw "Missing input";
+    }
+
+    switch(calcVar) {
+
+      case "A":
+        result = (B*C*D - C*D*E) / (F*C*E - F*B*E);
+        break;
+
+      case "B":
+        result = (F*C*A*E + C*D*E) / (C*D + F*A*E);
+        break;
+
+      case "C":
+        result = (F*A*E*B) / (F*A*E - D*B + D*E);
+        break;
+
+      case "D":
+        result = (F*A*C*E - F*A*E*B) / (C*B - C*E);
+        break;
+
+      case "E":
+        result = (D*C*B) / (F*A*C - F*A*B + D*C);
+        break;
+    }
+
+    if (!isFinite(result)) throw "Math error";
+
+    document.getElementById("result").innerText =
+      "Result: " + result.toFixed(2);
+
+  } catch {
+    document.getElementById("result").innerText =
+      "Enter valid values (avoid zero division)";
+  }
+}
+
+function resetFields() {
+  ["A","B","C","D","E","F"].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+  document.getElementById("result").innerText = "";
+}
+</script>
+
+</body>
+</html>
